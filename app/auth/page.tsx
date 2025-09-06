@@ -2,7 +2,9 @@
 
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils/cn';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../contexts/auth-context';
+import { useRouter } from 'next/navigation';
 
 export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
@@ -11,6 +13,14 @@ export default function AuthPage() {
   const [error, setError] = useState<string>('');
   const [loading, setLaoding] = useState<boolean>(false);
   const supabase = createClient();
+  const { loading: authLoading, user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && !authLoading) {
+      router.push('/');
+    }
+  }, [user, authLoading, router]);
 
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
